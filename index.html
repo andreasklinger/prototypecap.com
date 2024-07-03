@@ -48,10 +48,38 @@
         top: 30%;
         left: 60%;
       }
+      .header {
+        display: none;
+      }
+
+      @media only screen and (max-width: 600px) {
+        .container {
+          margin: 60px auto;
+          padding: 0 60px;
+        }
+        .header {
+          display: block;
+          margin: 50px 0;
+        }
+        .logo {
+          display: none;
+        }
+        .note-block {
+          position: relative;
+          top: 0;
+          left: 0;
+          margin: 0 auto;
+          width: 100%;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
+      <h1 class="header">
+        PROTOTYPE<br />
+        CAPITAL
+      </h1>
       <div class="logo">
         <div class="logo-block">
           <svg
@@ -87,8 +115,9 @@
         <br />
         $100k - $200k <br />
         <br />
-        Computer Vision, 3D, AI, Robotics, Space-Tech, Global Work,
-        Manufacturing <br />
+        Computer Vision, 3D, AI, Robotics, Space-Tech, Software for Builders,
+        Global Work, Manufacturing, Community Tools, Cool Stuff, Hard Stuff,
+        Weird Stuff <br />
 
         <br />
         Managed by
@@ -98,7 +127,7 @@
 
         <a href="https://klinger.io/posts/how-i-make-investment-decisions"
           >How we invest</a
-        >
+        ><br />
       </div>
     </div>
   </body>
