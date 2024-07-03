@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <!-- YES WE RAW DOGGING HTML –– NO FRAMEWORKS NO BUILDS NO NOTHING -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/glitch.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="content-block">
+          <div class="content-block--marker">&nbsp;</div>
+          <div class="content-block--text">
+            <h2 class="header breakme">
+              First-check, <br />
+              first-round, <br/ >
+                own conviction, globally.
+            </h2>
+            <p class="text breakme">
+              &middot; We invest $100k-$200k in pre-seed and seed stage startups. <br />
+              &middot; We are comfortable to be your first-investor and help you find
+              more.<br />
+              &middot; We do not care where you are based as long as you have global
+              ambition.<br />
+              &middot; 50% of our investments are US-based, 20% Europe, 30% rest of the
+              world with a focus on India.<br />
+              &middot; We don't join your board, we don't invite you to retreats, we
+              don't take you out to fancy dinners. But we are the first to reply
+              in your whatsapp if you need help.
+              <br />
+            </p>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <div class="content-block--marker">&nbsp;</div>
+          <div class="content-block--text">
+            <h2 class="header breakme">
+              Overly ambitious, only slightly impossible.
+            </h2>
+            <p class="text breakme">
+              We look for people who want to solve technical challenges, that
+              are hard to solve, but if they work <em>unlock magic.</em> <br />
+              If you need spreadsheets to proof to us
+              that this is a good opportunity we are most likely the wrong
+              investor for you!<br />
+              <a
+                href="https://klinger.io/posts/how-i-make-investment-decisions"
+                target="_blank"
+                >Read here how we make investment decisions.</a
+              >
+            </p>
+            <p class="text breakme">
+              <br /><br />
+              <strong>Our current investment focus:</strong> Space-tech,
+              computer-vision, manufacturing, AI, robotics, global work,
+              developer tooling.
+            </p>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <div class="content-block--marker">&nbsp;</div>
+          <div class="content-block--table">
+            <h2 class="header breakme">Portfolio examples</h2>
+            <div>
+              <table class="portfolio">
+                <tr>
+                  <td>
+                    <a href="https://remote.com">Remote</a>
+                  </td>
+                  <td>Global employment & stock options</td>
+                  <td>First-round</td>
+                  <td>Series C</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="https://remote.com">Acquire</a>
+                  </td>
+                  <td>Global startup marketplace</td>
+                  <td>First-check</td>
+                  <td>Series A</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="https://remote.com">Acquire</a>
+                  </td>
+                  <td>Global startup marketplace</td>
+                  <td>First-check</td>
+                  <td>Series A</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="logo">
+        <div class="logo-block">
+          <img
+            src="img/logo-bottom.svg"
+            alt="PROTOTYPE"
+            class="logo-block--bottom"
+          /><img
+            src="img/logo-top.svg"
+            alt="PROTOTYPE"
+            class="logo-block--top"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let logo = document.querySelector(".logo");
+    let classes = ["glitch", "vibrate", "flicker"];
+
+    document.querySelectorAll(".breakme").forEach((el) => {
+      el.setAttribute("data-text", el.innerText);
+    });
+    logo.addEventListener("mouseleave", (e) => {
+      document.querySelectorAll(".breakme").forEach((el) => {
+        el.classList.remove(...classes);
+      });
+    });
+    logo.addEventListener("mouseenter", (e) => {
+      let randomClass = classes[Math.floor(Math.random() * classes.length)];
+
+      document.querySelectorAll(".breakme").forEach((el) => {
+        el.classList.add(randomClass);
+      });
+    });
+
+    let heightDiff =
+      document.querySelector(".logo-block--top").height -
+      document.querySelector(".logo-block--bottom").height;
+
+    document.addEventListener("scroll", (e) => {
+      let addOn = Math.min(window.scrollY / 30, heightDiff);
+      document.querySelector(".logo-block--bottom").style.marginTop =
+        `${addOn}px`;
+    });
+  </script>
+</html>
