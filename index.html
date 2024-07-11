@@ -36,84 +36,12 @@
       property="twitter:image"
       content="https://www.prototypecap.com/img/og/og.png"
     />
-
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/glitch.css" />
-    <style>
-      body {
-        background-color: #101010;
-        color: #e0e0e0;
-      }
-      a,
-      a:visited {
-        color: white;
-      }
-      .logo {
-        width: 124px;
-        margin: 100px auto;
-      }
-      .logo-block {
-        position: relative;
-      }
-      .logo-block svg {
-        position: absolute;
-      }
-      .logo-block--bottom {
-        width: 62px;
-        height: 948px;
-        top: 4px;
-        left: 0;
-        margin-top: 0px;
-      }
-      .logo-block--top {
-        width: 62px;
-        height: 967px;
-        top: 0;
-        left: 61px;
-      }
-
-      .note-block {
-        width: 300px;
-        font-family: "Courier New", Courier, "Lucida Sans Typewriter",
-          "Lucida Typewriter", monospace;
-        position: fixed;
-        top: 30%;
-        left: 60%;
-      }
-      .header {
-        display: none;
-      }
-
-      @media only screen and (max-width: 600px) {
-        .container {
-          margin: 100px auto;
-          padding: 0 60px;
-        }
-        .header {
-          display: block;
-          margin: 0 0 20px;
-        }
-        .header svg {
-          width: 100%;
-          height: 100%;
-        }
-        .logo {
-          display: none;
-        }
-        .note-block {
-          position: relative;
-          top: 0;
-          left: 0;
-          margin: 0 auto;
-          width: 100%;
-        }
-        .note-title {
-          display: none;
-        }
-      }
-    </style>
+    <script src="/scripts/misc.js"></script>
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/glitch.css" />
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
-  <body>
+  <body class="index">
     <div class="container">
       <div class="header">
         <svg
@@ -239,38 +167,49 @@
           </svg>
         </div>
       </div>
-      <div class="note-block breakme">
-        <strong class="note-title"">Prototype</strong ><br />
+      <div class="small-note breakme">
+        <strong class="small-note-title"">Prototype</strong ><br />
         First-check, first-round, technical, own conviction, globally. <br />
         <br />
         $100k - $200k <br />
         <br />
         Computer Vision, 3D, AI, Robotics, Space-Tech, Software for Builders,
-        Global Work, Manufacturing, Community Tools, Cool Stuff, Hard Stuff,
+        Global Work, Manufacturing, Community Tools,<br/>
+        Cool Stuff, Hard Stuff,
         <br />
         Weird Stuff – globally. <br />
         <br />
         <br />
-        Managed by
+        Solo-GP fund by
         <a href="https://twitter.com/andreasklinger">@andreasklinger</a>
         <br />
         <br />
 
+        <a href="/about">About</a><br/>
+        <a href="/about/#portfolio">Portfolio</a><br/>
         <a href="https://klinger.io/posts/how-i-make-investment-decisions"
           >How we invest</a
         ><br />
       </div>
     </div>
-  </body>
+  </body >
   <script>
-    let logo = document.querySelector(".logo");
-    let classes = ["glitch", "vibrate", "flicker"];
+    // Glitch Effect
+    document.querySelector(".small-note").addEventListener("mouseover", (e) => {
+      document.querySelectorAll(".breakme").forEach((el) => {
+        el.setAttribute("data-text", el.innerText);
+        el.classList.add("glitch");
 
-    document.querySelectorAll(".breakme").forEach((el) => {
-      el.setAttribute("data-text", el.innerText);
+        setTimeout(function() {
+          el.classList.remove("glitch");
+        }, 3000);
+      });
     });
+    // On Desktop Hover Effect
+    let logo = document.querySelector(".logo");
+    let classes = ["vibrate", "flicker"];
 
-    // On Desktop Effect
+
     if (window.innerWidth > 600) {
       logo.addEventListener("mouseleave", (e) => {
         document.querySelectorAll(".breakme").forEach((el) => {
@@ -278,13 +217,12 @@
         });
       });
       logo.addEventListener("mouseenter", (e) => {
-        let randomClass = classes[Math.floor(Math.random() * classes.length)];
-
         document.querySelectorAll(".breakme").forEach((el) => {
-          el.classList.add(randomClass);
+          el.classList.add(sample(classes));
         });
       });
 
+      // On Desktop Scroll Effect
       let heightDiff =
         document.querySelector(".logo-block--top").clientHeight -
         document.querySelector(".logo-block--bottom").clientHeight;
@@ -293,17 +231,6 @@
         let addOn = Math.min(window.scrollY / 10, heightDiff);
         document.querySelector(".logo-block--bottom").style.marginTop =
           `${addOn}px`;
-      });
-    }
-
-    // On Mobile Effect
-    if (window.innerWidth <= 600) {
-      document.querySelectorAll(".breakme").forEach((el) => {
-        el.classList.add("glitch");
-
-        setTimeout(function() {
-          el.classList.remove("glitch");
-        }, 3000);
       });
     }
   </script>
