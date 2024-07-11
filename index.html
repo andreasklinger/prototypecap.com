@@ -195,22 +195,30 @@
   </body >
   <script>
     // Glitch Effect
-    document.querySelector(".small-note").addEventListener("mouseover", (e) => {
-      document.querySelectorAll(".breakme").forEach((el) => {
+    //
+    function breakMe(el) {
         el.setAttribute("data-text", el.innerText);
         el.classList.add("glitch");
 
         setTimeout(function() {
           el.classList.remove("glitch");
         }, 3000);
-      });
-    });
-    // On Desktop Hover Effect
+    }
+
+    // On Mobile
+    if (window.innerWidth <= 600) {
+      document.querySelectorAll(".breakme").forEach((el) => breakMe(el));
+    }
+
+    // On Desktop
     let logo = document.querySelector(".logo");
     let classes = ["vibrate", "flicker"];
 
-
     if (window.innerWidth > 600) {
+      document.querySelector(".small-note").addEventListener("mouseover", (e) => {
+        document.querySelectorAll(".breakme").forEach((el) => breakMe(el));
+      });
+
       logo.addEventListener("mouseleave", (e) => {
         document.querySelectorAll(".breakme").forEach((el) => {
           el.classList.remove(...classes);
