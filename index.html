@@ -168,6 +168,7 @@
         </div>
       </div>
       <div class="small-note breakme">
+        <img src="/img/vibe/1.jpg" class="vibe-image" />
         <strong class="small-note-title"">Prototype</strong ><br />
         First-check, first-round, technical, own conviction, globally. <br />
         <br />
@@ -207,27 +208,35 @@
 
     // On Mobile
     if (window.innerWidth <= 600) {
-      document.querySelectorAll(".breakme").forEach((el) => breakMe(el));
+      breakMe(document.querySelector(".breakme"));
     }
 
     // On Desktop
-    let logo = document.querySelector(".logo");
-    let classes = ["vibrate", "flicker"];
-
     if (window.innerWidth > 600) {
       document.querySelector(".small-note").addEventListener("mouseover", (e) => {
-        document.querySelectorAll(".breakme").forEach((el) => breakMe(el));
+        breakMe(document.querySelector(".breakme"));
       });
 
+      let vibe = 0;
+      let logo = document.querySelector(".logo");
+      let classes = ["vibrate", "flicker"];
       logo.addEventListener("mouseleave", (e) => {
-        document.querySelectorAll(".breakme").forEach((el) => {
-          el.classList.remove(...classes);
-        });
+        document.querySelector(".breakme").classList.remove(...classes);
+        document.querySelector(".vibe-image").classList.remove("visible");
+        vibe = 0;
       });
+
       logo.addEventListener("mouseenter", (e) => {
-        document.querySelectorAll(".breakme").forEach((el) => {
-          el.classList.add(sample(classes));
-        });
+        document.querySelector(".breakme").classList.add(sample(classes));
+      });
+
+      logo.addEventListener("click", (e) => {
+        document.querySelector(".breakme").classList.remove("flicker");
+        document.querySelector(".breakme").classList.add("vibrate");
+        let image = document.querySelector(".vibe-image");
+        image.src = `/img/vibe/${vibe}.jpg`;
+        image.classList.add("visible");
+        vibe = Math.floor(Math.random() * 17);
       });
 
       // On Desktop Scroll Effect
