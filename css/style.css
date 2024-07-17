@@ -152,3 +152,20 @@ p {
 .visible {
   display: block;
 }
+
+.menu {
+  display: flex;
+}
+
+.menu a {
+  display: inline-block;
+  margin: 0 0.5em;
+}
+
+.menu a:first-child {
+  margin-left: 0;
+}
+
+.menu a:last-child {
+  margin-right: 0;
+}
