@@ -169,3 +169,7 @@ p {
 .menu a:last-child {
   margin-right: 0;
 }
+
+.content-block {
+  margin-bottom: 3em;
+}
