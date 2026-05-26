@@ -524,7 +524,7 @@ let targetRotationY = 0;
 
 // GLB Loader
 const loader = new GLTFLoader();
-const modelPath = 'https://feliperude.github.io/prototype/HeaderVideo/EU_Inc_Logo_2.glb';
+const modelPath = 'https://www.prototypecap.com/3D_Model/EU_Inc_Logo_2.glb';
 
 loader.load(
 modelPath,
@@ -861,12 +861,11 @@ Yes this sounds low. But this is true for every VC, we are just honest about it.
                     <div class="container d-flex flex-column mt-5 mb-0 pb-9" style="max-width: 1920px;padding: 0px;">
                         <p class="me-5 footer-p"><a href="/imprint.html">IMPRINT</a><br><br><a href="/privacypolicy.html">privacy policy</a><br><br><br><br><br><a href="https://www.youtube.com/@prototypecap" target="_blank">Youtube↗</a><br><br><a href="https://www.linkedin.com/in/andreasklinger/?originalSubdomain=de" target="_blank">Linkedin↗</a><br><br><a href="https://x.com/andreasklinger?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor" target="_blank">X↗</a></p>
                     </div>
-                    <div class="container mt-8" style="max-width: 1920px;padding-bottom: 1.5rem!important;"><p class="mt-0 mb-0 pb-3">BUILD EUROPE. FIGHT MEDUSA.<br />
-    <span id="currentYear"></span>
+                    <div class="container mt-8" style="max-width: 1920px;padding-bottom: 1.5rem!important;"><p class="mt-0 mb-5 pb-3">BUILD EUROPE. FIGHT MEDUSA.<br />
+    <span id="yearReplace"></span>
 <script>
-  document.getElementById('yearReplace').textContent = `©${new Date().getFullYear()}`;
-</script>
-    PROTOTYPE</p></div>
+document.getElementById('yearReplace').textContent = "PROTOTYPE " + `©${new Date().getFullYear()}`;
+</script></div>
                 </section>
             </footer>
         </div>
