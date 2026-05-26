@@ -472,190 +472,216 @@ Loading 3D-Model...
 }
 }
 </script>
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+<script>
+(function () {
+  const container = document.getElementById('three-container');
+  const loadingIndicator = document.getElementById('loading-indicator');
+  if (!container) return;
 
-// Container Element
-const container = document.getElementById('three-container');
-const loadingIndicator = document.getElementById('loading-indicator');
+  const MOBILE_BREAKPOINT = 768;
+  const isMobile = window.matchMedia('(max-width: ' + (MOBILE_BREAKPOINT - 1) + 'px)').matches;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Scene Setup
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x2A13FE);
+  // --- MOBIL / Reduced Motion: Three.js NICHT laden, statischen Fallback zeigen ---
+  if (isMobile || prefersReducedMotion) {
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
+    // Optional: statt des blauen Blocks ein statisches Logo-Bild zeigen.
+    // Pfad eintragen und die nächste Zeile aktivieren:
+    container.innerHTML = '<img src="assets/img/EU_INC_LOGO.webp" alt="EU-Inc" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:80%;max-height:80%;">';
+    return;
+  }
 
-// Kamera Setup
-const camera = new THREE.PerspectiveCamera(
-45, // Field of View
-container.offsetWidth / container.offsetHeight, // Aspect Ratio
-0.1, // Near Plane
-1000 // Far Plane
-);
-camera.position.set(0, 3, 6); // Frontale, zentrierte Kameraposition
-camera.lookAt(0, 0, 0); // KORREKTUR: Kamera schaut auf den Mittelpunkt der Szene
+  // --- DESKTOP: Three.js erst laden, wenn der Container in Sichtweite kommt ---
+  let started = false;
+  if ('IntersectionObserver' in window) {
+    const initObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !started) {
+          started = true;
+          initObserver.disconnect();
+          loadThree();
+        }
+      });
+    }, { rootMargin: '200px' });
+    initObserver.observe(container);
+  } else {
+    loadThree();
+  }
 
-// Renderer Setup
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(container.offsetWidth, container.offsetHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-container.appendChild(renderer.domElement);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+  function loadThree() {
+    Promise.all([
+      import('three'),
+      import('three/addons/loaders/GLTFLoader.js')
+    ]).then(function (modules) {
+      runScene(modules[0], modules[1].GLTFLoader);
+    }).catch(function (error) {
+      console.error('Fehler beim Laden von Three.js:', error);
+      if (loadingIndicator) {
+        loadingIndicator.textContent = 'Fehler beim Laden des Modells!';
+        loadingIndicator.style.color = '#ff0000';
+      }
+    });
+  }
 
-// Lichter Setup
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-scene.add(ambientLight);
+  function runScene(THREE, GLTFLoader) {
+    // Scene Setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2A13FE);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-directionalLight.position.set(5, 10, 5);
+    // Kamera Setup
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      container.offsetWidth / container.offsetHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 3, 6);
+    camera.lookAt(0, 0, 0);
 
-scene.add(directionalLight);
+    // Renderer Setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // gedeckelt: spart Leistung auf Retina
+    // shadowMap absichtlich AUS – es wirft ohnehin nichts Schatten
+    container.appendChild(renderer.domElement);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
+    // Lichter Setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    scene.add(ambientLight);
 
-// Variable für das 3D-Modell und den Wrapper
-let modelWrapper = null; // NEU: Wrapper für die Rotation
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(5, 10, 5);
+    scene.add(directionalLight);
 
-// Variablen für Maus-Animation
-let mouseX = 0;
-let mouseY = 0;
-let targetRotationX = 0;
-let targetRotationY = 0;
+    // Variablen
+    let modelWrapper = null;
+    let mouseX = 0, mouseY = 0;
+    let targetRotationX = 0, targetRotationY = 0;
 
-// GLB Loader
-const loader = new GLTFLoader();
-const modelPath = 'https://www.prototypecap.com/3D_Model/EU_Inc_Logo_2.glb';
+    // GLB Loader
+    const loader = new GLTFLoader();
+    const modelPath = 'https://feliperude.github.io/prototype/HeaderVideo/EU_Inc_Logo_2.glb';
 
-loader.load(
-modelPath,
-function(gltf) {
-const model = gltf.scene;
+    loader.load(
+      modelPath,
+      function (gltf) {
+        const model = gltf.scene;
 
-const whiteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0,
-    metalness: 0 
-});
+        const whiteMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0,
+          metalness: 0
+        });
 
-model.traverse(function(child) {
-if (child.isMesh) {
-child.material = whiteMaterial;
-child.castShadow = false;
-child.receiveShadow = false;
-}
-});
+        model.traverse(function (child) {
+          if (child.isMesh) {
+            child.material = whiteMaterial;
+            child.castShadow = false;
+            child.receiveShadow = false;
+          }
+        });
 
-// --- KORREKTUR: MODELL ZENTRIEREN UND WRAPPEN ---
+        // Modell zentrieren und wrappen
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        model.position.sub(center);
 
-// 1. Bounding Box berechnen, um die Mitte und Größe zu bekommen
-const box = new THREE.Box3().setFromObject(model);
-const center = box.getCenter(new THREE.Vector3());
-const size = box.getSize(new THREE.Vector3());
+        modelWrapper = new THREE.Group();
+        modelWrapper.add(model);
 
-// 2. Das Modell so verschieben, dass sein Zentrum im Ursprung (0,0,0) liegt
-model.position.sub(center);
+        const maxDimension = Math.max(size.x, size.y, size.z);
+        const targetSize = 4.2;
+        modelWrapper.scale.multiplyScalar(targetSize / maxDimension);
 
-// 3. Eine Wrapper-Gruppe erstellen, das zentrierte Modell hinzufügen
-modelWrapper = new THREE.Group();
-modelWrapper.add(model);
+        scene.add(modelWrapper);
 
-// 4. Den Wrapper skalieren, damit das Modell eine passende Größe hat
-const maxDimension = Math.max(size.x, size.y, size.z);
-const targetSize = 4.2;
-const scale = targetSize / maxDimension;
-modelWrapper.scale.multiplyScalar(scale);
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+      },
+      function (xhr) {
+        if (xhr.lengthComputable && loadingIndicator) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          loadingIndicator.textContent = 'Lade 3D-Modell... ' + Math.round(percentComplete) + '%';
+        }
+      },
+      function (error) {
+        console.error('Fehler beim Laden des Modells:', error);
+        if (loadingIndicator) {
+          loadingIndicator.textContent = 'Fehler beim Laden des Modells!';
+          loadingIndicator.style.color = '#ff0000';
+        }
+      }
+    );
 
-// 5. Den Wrapper (mit dem Modell darin) zur Szene hinzufügen
-scene.add(modelWrapper);
-
-// --- ENDE DER KORREKTUR ---
-
-loadingIndicator.style.display = 'none';
-console.log('Model erfolgreich geladen und zentriert!');
-},
-function(xhr) {
-if (xhr.lengthComputable) {
-const percentComplete = (xhr.loaded / xhr.total) * 100;
-loadingIndicator.textContent = `Lade 3D-Modell... ${Math.round(percentComplete)}%`;
-}
-},
-function(error) {
-console.error('Fehler beim Laden des Modells:', error);
-loadingIndicator.textContent = 'Fehler beim Laden des Modells!';
-loadingIndicator.style.color = '#ff0000';
-}
-);
-
-// Event Handler für Maus- und Touch-Bewegung
-function onMouseMove(event) {
-const rect = container.getBoundingClientRect();
-mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-targetRotationY = mouseX * 0.3;
-targetRotationX = -mouseY * 0.1;
-}
-
-function onTouchMove(event) {
-    if (event.touches.length > 0) {
-        // KORREKTUR: Wir müssen den ersten Finger aus der Liste nehmen [0]
-        const touch = event.touches[0]; 
-        
+    // Maus- / Touch-Bewegung
+    function onMouseMove(event) {
+      const rect = container.getBoundingClientRect();
+      mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      targetRotationY = mouseX * 0.3;
+      targetRotationX = -mouseY * 0.1;
+    }
+    function onTouchMove(event) {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
         const rect = container.getBoundingClientRect();
-        
-        // Optional: Verhindert das Scrollen der Seite, während man das Modell dreht
-        // event.preventDefault(); 
-
         mouseX = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
         mouseY = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
-
         targetRotationY = mouseX * 0.3;
         targetRotationX = -mouseY * 0.1;
+      }
     }
-}
+    document.addEventListener('mousemove', onMouseMove, { passive: true });
+    document.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('mouseleave', function () {
+      targetRotationX = 0;
+      targetRotationY = 0;
+    });
 
-// Event Listeners
-document.addEventListener('mousemove', onMouseMove);
-document.addEventListener('touchmove', onTouchMove);
+    // --- Render-Loop, der pausiert wenn unsichtbar oder Tab im Hintergrund ---
+    let rafId = null;
+    let inView = true;
 
-container.addEventListener('mouseleave', function() {
-targetRotationX = 0;
-targetRotationY = 0;
-});
+    function renderFrame() {
+      rafId = requestAnimationFrame(renderFrame);
+      if (modelWrapper) {
+        modelWrapper.rotation.x += (targetRotationX - modelWrapper.rotation.x) * 0.05;
+        modelWrapper.rotation.y += (targetRotationY - modelWrapper.rotation.y) * 0.05;
+      }
+      renderer.render(scene, camera);
+    }
+    function startLoop() { if (rafId === null) renderFrame(); }
+    function stopLoop() { if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
 
-// Animation Loop
-function animate() {
-requestAnimationFrame(animate);
+    if ('IntersectionObserver' in window) {
+      const visObserver = new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (inView && !document.hidden) startLoop(); else stopLoop();
+      }, { threshold: 0 });
+      visObserver.observe(container);
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopLoop();
+      else if (inView) startLoop();
+    });
 
-// KORREKTUR: Sanfte Rotation des Wrappers
-if (modelWrapper) {
-modelWrapper.rotation.x += (targetRotationX - modelWrapper.rotation.x) * 0.05;
-modelWrapper.rotation.y += (targetRotationY - modelWrapper.rotation.y) * 0.05;
-}
+    // Resize
+    window.addEventListener('resize', function () {
+      camera.aspect = container.offsetWidth / container.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.offsetWidth, container.offsetHeight);
+    });
 
-renderer.render(scene, camera);
-}
-
-// Window Resize Handler
-function onWindowResize() {
-camera.aspect = container.offsetWidth / container.offsetHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(container.offsetWidth, container.offsetHeight);
-}
-window.addEventListener('resize', onWindowResize);
-
-// Start Animation
-animate();
-
+    startLoop();
+  }
+})();
 </script>
 <style>
-/* Optional: Zusätzliche Styles */
 #three-container canvas {
-display: block;
-/* Cursor, um Bewegung anzudeuten */
-cursor: move;
+  display: block;
+  cursor: move;
 }
-
 </style>
                         <p class="mt-4 mb-5" data-aos="fade" data-aos-duration="750" style="color: #e6e6e6;font-size: 2rem;">EU–INC</p>
                         <p class="mb-4 mb-" data-aos="fade" data-aos-duration="750" style="color: #e6e6e6;font-size: 1.2rem;width: 800px;max-width: 90%;line-height: 1.5rem;margin-bottom: 32;">Europe has the talent, ambition, and ecosystems to create Gigantic innovative companies, but fragmentation between European nations is holding us back.<br><br>Let's not just talk ...</p><a class="btn btn-primary btn_pink_blau" role="button" data-aos="fade" data-aos-duration="750" style="padding: 8px;border-radius: 0;border-width: 0px;border-color: #e31961;color: rgb(255,255,255);background: #DE0025;font-size: 1.2rem;text-transform: uppercase;line-height: 0.8rem;margin-bottom: 2rem;margin-top: 1rem;" href="https://www.eu-inc.org/" target="_blank">Let’s Fix Europe for Startups</a>
